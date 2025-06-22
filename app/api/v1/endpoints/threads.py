@@ -22,3 +22,10 @@ def create_thread(
 def get_threads(session: Session = Depends(get_session)):
     threads = session.exec(select(Thread).order_by(Thread.created_at.desc())).all()
     return threads
+
+@router.get("/{thread_id}", response_model=ThreadRead)
+def get_thread(thread_id: int, session: Session = Depends(get_session)):
+    thread = session.exec(select(Thread).where(Thread.id == thread_id)).first()
+    if not thread:
+        raise HTTPException(status_code=404, detail="Thread not found")
+    return thread
