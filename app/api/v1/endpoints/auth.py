@@ -12,15 +12,16 @@ def register(user: UserCreate, session: Session = Depends(get_session)):
     existing = session.exec(select(User).where(
         User.email == user.email or User.username == user.username)).first()
     if existing:
-        raise HTTPException(status_code=400, detail="Email or Username already registered")
+        raise HTTPException(
+            status_code=400, detail="Email or Username already registered")
 
     hashed = hash_password(user.password)
     new_user = User(username=user.username,
-                   email=user.email, password_hash=hashed)
+                    email=user.email, password_hash=hashed)
     session.add(new_user)
     session.commit()
     session.refresh(new_user)
-    return {"msg": "User created successfully", "user_id": new_user.id}
+    return {"id": new_user.id, "username": new_user.username, "email": new_user.email}
 
 
 @router.post("/login")
