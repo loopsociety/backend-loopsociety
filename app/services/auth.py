@@ -10,7 +10,6 @@ from app.schemas.auth import TokenResponse
 from jose import JWTError, jwt
 from app.core.config import SECRET_KEY, ALGORITHM
 from app.db.database import get_session
-from app.models.user import User
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -25,6 +24,22 @@ def hash_password(password: str) -> str:
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
+def register_user(
+    email: str, username: str, password: str, session: Session
+) -> Optional[User]:
+    existing = session.exec(select(User).where(
+        User.email == email or User.username == username)).first()
+    if existing:
+        raise HTTPException(
+            status_code=400, detail="Email or Username already registered")
+
+    hashed = hash_password(password)
+    new_user = User(username=username,
+                    email=email, password_hash=hashed)
+    session.add(new_user)
+    session.commit()
+    session.refresh(new_user)
+    return {"id": new_user.id, "username": new_user.username, "email": new_user.email}
 
 def authenticate_user(
     email: str, password: str, session: Session
