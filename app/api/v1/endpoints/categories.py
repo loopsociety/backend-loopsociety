@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
 from app.models.category import Category
 from app.schemas.category import CategoryCreate
-from app.core.dependencies import get_current_user
+from app.services.auth import get_current_user
 from app.db.database import get_session
 
 router = APIRouter()

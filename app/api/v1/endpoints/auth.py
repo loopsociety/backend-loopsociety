@@ -3,7 +3,7 @@ from sqlmodel import Session, select
 from app.models.user import User
 from app.schemas.user import UserCreate, UserLogin
 from app.db.database import get_session
-from app.core.security import hash_password, verify_password, create_access_token
+from app.services.auth import hash_password, authenticate_user
 
 router = APIRouter()
 
@@ -27,9 +27,4 @@ def register(user: UserCreate, session: Session = Depends(get_session)):
 
 @router.post("/login")
 def login(data: UserLogin, session: Session = Depends(get_session)):
-    user = session.exec(select(User).where(User.email == data.email)).first()
-    if not user or not verify_password(data.password, user.password_hash):
-        raise HTTPException(status_code=401, detail="Invalid credentials")
-
-    token = create_access_token({"sub": str(user.id)})
-    return {"access_token": token, "token_type": "bearer"}
+    return authenticate_user(data.email, data.password, session)

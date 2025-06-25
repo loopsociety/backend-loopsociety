@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from sqlmodel import Session, select
 from app.models.post import Post
 from app.schemas.post import PostCreate, PostRead
-from app.core.dependencies import get_current_user
+from app.services.auth import get_current_user
 from app.db.database import get_session
 
 router = APIRouter()
