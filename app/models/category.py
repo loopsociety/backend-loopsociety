@@ -2,12 +2,6 @@ from sqlmodel import SQLModel, Field
 from typing import Optional
 from datetime import datetime
 
-class CategoryBase(SQLModel):
-    name: str
-    slug: str
-    description: Optional[str] = None
-    icon: Optional[str] = None
-    position: int = 0
 
 class Category(SQLModel, table=True):
     __tablename__ = "categories"
@@ -20,6 +14,3 @@ class Category(SQLModel, table=True):
     position: int = Field(default=0)
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
-
-class CategoryCreate(CategoryBase):
-    pass

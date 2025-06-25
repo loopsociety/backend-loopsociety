@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
-from app.models.thread import Thread, ThreadCreate, ThreadRead
+from app.models.thread import Thread
+from app.schemas.thread import ThreadCreate, ThreadRead
 from app.core.dependencies import get_current_user
 from app.db.database import get_session
 

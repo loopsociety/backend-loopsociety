@@ -2,14 +2,6 @@ from sqlmodel import SQLModel, Field
 from typing import Optional
 from datetime import datetime
 
-class ThreadBase(SQLModel):
-    title: str
-    slug: str
-    category_id: int
-    is_pinned: bool = False
-    is_locked: bool = False
-    is_closed: bool = False
-
 class Thread(SQLModel, table=True):
     __tablename__ = "threads"
 
@@ -25,15 +17,3 @@ class Thread(SQLModel, table=True):
     last_post_at: Optional[datetime] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
-
-class ThreadCreate(ThreadBase):
-    pass
-
-class ThreadRead(ThreadBase):
-    id: int
-    title: str
-    user_id: int
-    category_id: int
-    view_count: int
-    created_at: datetime
-    updated_at: datetime

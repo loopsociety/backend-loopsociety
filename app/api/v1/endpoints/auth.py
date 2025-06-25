@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import Session, select
-from app.models.user import User, UserCreate, UserLogin
+from app.models.user import User
+from app.schemas.user import UserCreate, UserLogin
 from app.db.database import get_session
 from app.core.security import hash_password, verify_password, create_access_token
 

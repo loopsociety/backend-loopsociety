@@ -2,31 +2,10 @@ from sqlmodel import SQLModel, Field
 from typing import Optional
 from datetime import datetime
 
-class UserLogin(SQLModel):
-    email: str
-    password: str
-
-class UserCreate(SQLModel):
-    username: str
-    email: str
-    password: str
-
-class UserRead(SQLModel):
-    id: int
-    username: str
-    title: Optional[str] = None
-    avatar_url: Optional[str] = None
-    bio: Optional[str] = None
-    reputation: int
-    level: str
-    email_verified_at: Optional[datetime] = None
-    last_seen: Optional[datetime] = None
-    is_active: bool
-    created_at: datetime
 
 class User(SQLModel, table=True):
     __tablename__ = "users"
-    
+
     id: Optional[int] = Field(default=None, primary_key=True)
     username: str = Field(max_length=50)
     email: str = Field(max_length=255)
