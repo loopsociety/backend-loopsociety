@@ -2,8 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlmodel import Session
 from app.schemas.user import UserCreate, UserLogin
 from app.db.database import get_session
-from app.services.auth import authenticate_user, register_user, login_user, refresh_token
-from app.schemas.auth import TokenResponse, TokenRefreshRequest
+from app.services.auth import authenticate_user, register_user, login_user, refresh_token, get_current_user, logout_user
+from app.schemas.auth import TokenResponse, TokenRefreshRequest, LogoutRequest
+from app.models.user import User
 
 router = APIRouter()
 
@@ -25,6 +26,15 @@ def login(
             status_code=400, detail="Incorrect username or password")
 
     return login_user(user, request, session)
+
+
+@router.post("/logout")
+def logout(
+    request: Request,
+    current_user: User = Depends(get_current_user),
+    session: Session = Depends(get_session)
+):
+    return logout_user(request, session, current_user)
 
 
 @router.post("/refresh", response_model=TokenResponse)

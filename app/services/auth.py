@@ -5,7 +5,7 @@ from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
 from app.models.user import User
 from app.utils.auth import create_token, get_token_hash
-from app.schemas.auth import TokenResponse
+from app.schemas.auth import TokenResponse, LogoutRequest
 
 from jose import JWTError, jwt
 from app.core.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES, REFRESH_TOKEN_EXPIRE_DAYS
@@ -152,3 +152,41 @@ def get_current_user(
         raise HTTPException(status_code=404, detail="User not found")
 
     return user
+
+
+def logout_user(request: Request, session: Session, current_user: User):
+    auth_header = request.headers.get("Authorization")
+    print(auth_header)
+    if not auth_header or not auth_header.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing refresh token")
+
+    refresh_token = auth_header.split(" ")[1]
+
+    try:
+        payload = jwt.decode(refresh_token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id = int(payload.get("sub"))
+    except Exception:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    
+
+    if user_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized to logout this user")
+    
+    refresh_hash = get_token_hash(refresh_token)
+
+    user_session = session.exec(
+        select(UserSession).where(
+            UserSession.user_id == current_user.id,
+            UserSession.refresh_token_hash == refresh_hash,
+            UserSession.is_active == True
+        )
+    ).first()
+    
+    if not user_session:
+        raise HTTPException(status_code=404, detail="Session not found or already inactive")
+    
+    user_session.is_active = False
+    session.add(user_session)
+    session.commit()
+
+    return {"message": "Logged out successfully"}
