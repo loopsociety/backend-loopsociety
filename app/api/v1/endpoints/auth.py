@@ -2,8 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlmodel import Session
 from app.schemas.user import UserCreate, UserLogin
 from app.db.database import get_session
-from app.services.auth import authenticate_user, register_user, login_user
-from app.services.auth import refresh_token
+from app.services.auth import authenticate_user, register_user, login_user, refresh_token
 from app.schemas.auth import TokenResponse, TokenRefreshRequest
 
 router = APIRouter()
