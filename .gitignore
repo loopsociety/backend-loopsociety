@@ -2,10 +2,10 @@ __pycache__/
 *.py[cod]
 .env
 .env.*
+.venv
 *.sqlite3
 alembic/versions/*.pyc
 *.log
-.vscode/
 .idea/
 *.db
 dist/
