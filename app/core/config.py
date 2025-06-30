@@ -15,3 +15,8 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 # Other common values
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 15))
 REFRESH_TOKEN_EXPIRE_DAYS = int(os.getenv("REFRESH_TOKEN_EXPIRE_DAYS", 7))
+
+# CORS configuration
+ORIGINS = [
+    "http://localhost:3000",
+]
