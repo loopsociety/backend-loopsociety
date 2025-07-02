@@ -1,0 +1,36 @@
+services:
+  app:
+    depends_on:
+      db:
+        condition: service_healthy
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile
+    restart: unless-stopped
+    tty: true
+    container_name: fastapi_app
+    volumes:
+      - ./:/workspace
+    ports:
+      - 8000:8000
+      - 5678:5678
+    env_file:
+      - ./.env
+  db:
+    image: mysql:8.0.42-bookworm
+    container_name: fastapi_db
+    restart: always
+    ports:
+      - 3306:3306
+    volumes:
+      - db_data:/var/lib/mysql
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u$$MYSQL_USER", "-p$$MYSQL_PASSWORD"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  db_data:
