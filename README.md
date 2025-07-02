@@ -75,6 +75,73 @@ alembic upgrade head
 uvicorn app.main:app --reload
 ```
 
+## 🐳 Uso de Docker Compose y Devcontainer
+
+Este proyecto soporta dos formas principales de desarrollo con Docker: usando **Docker Compose** directamente o usando el entorno de desarrollo remoto de **Devcontainer** en VS Code. Ambas opciones aíslan las dependencias y facilitan la colaboración.
+
+---
+
+### 🚀 Opción 1: Usar Docker Compose
+
+1. **Copia el archivo `.env` y edítalo** con tus credenciales de base de datos y variables necesarias.  
+   Un ejemplo de archivo `.env` para usar Docker Compose es:
+
+   ```env
+   DATABASE_URL=mysql+pymysql://user:password@db:3306/loopsociety
+   SECRET_KEY=supersecret
+   MYSQL_USER=user
+   MYSQL_ROOT_PASSWORD=password
+   MYSQL_PASSWORD=password
+   MYSQL_DATABASE=loopsociety
+   ```
+
+   > **Nota:**  
+   > Si solo quieres usar el servicio de base de datos (`db`) de Docker y correr FastAPI localmente (fuera de Docker), cambia `db` por `localhost` en la variable `DATABASE_URL`:
+   > ```
+   > DATABASE_URL=mysql+pymysql://user:password@localhost:3306/loopsociety
+   > ```
+
+2. **Levanta los servicios** (FastAPI y MySQL):
+
+   ```bash
+   docker-compose up --build
+   ```
+
+   Esto construirá la imagen, instalará dependencias y levantará la base de datos y la app.
+
+3. **Accede a la API** en [http://localhost:8000](http://localhost:8000).
+
+4. **Detén los servicios** con:
+
+   ```bash
+   docker-compose down
+   ```
+
+---
+
+### 💻 Opción 2: Usar Devcontainer en VS Code
+
+El devcontainer te permite desarrollar dentro de un contenedor con todas las herramientas y extensiones configuradas automáticamente.
+
+1. **Abre el proyecto en VS Code**.
+
+2. Si tienes la extensión [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) instalada, haz clic en la esquina inferior izquierda (><) y selecciona:
+
+   ```
+   Reopen in Container
+   ```
+
+   VS Code construirá el contenedor usando la configuración de `.devcontainer/`.
+
+3. **¡Listo!**  
+   El servidor FastAPI y las migraciones se ejecutan automáticamente al iniciar el contenedor.  
+   Solo tienes que abrir [http://localhost:8000](http://localhost:8000) en tu navegador para acceder a la API.
+
+   > **Tip:**  
+   > El servidor FastAPI se ejecuta con la opción `--reload`, lo que significa que cualquier cambio en el código fuente se reflejará automáticamente sin necesidad de reiniciar el contenedor.
+
+---
+
 ## 🛠️ ¿Cómo colaborar?
 1. Crea una rama nueva:
 
