@@ -14,6 +14,15 @@ class UserCreate(BaseModel):
     password: str
 
 
+class UserUpdate(BaseModel):
+    username: Optional[str] = None
+    email: Optional[str] = None
+    title: Optional[str] = None
+    avatar_url: Optional[str] = None
+    bio: Optional[str] = None
+    password: Optional[str] = None
+
+
 class UserRead(BaseModel):
     id: int
     username: str

@@ -1,43 +1,51 @@
 from fastapi import APIRouter, Depends
-from sqlmodel import Session, select
+from sqlmodel import Session
 from app.models.category import Category
-from app.schemas.category import CategoryCreate, CategoryUpdate
 from app.db.database import get_session
-from app.services.category import create_category, get_category_by_id, get_all_categories, update_category, delete_category
+from app.utils.user import get_current_user
+from app.schemas.category import CategoryCreate, CategoryUpdate
+from app.services.category_service import CategoryService
+from typing import List
 
 router = APIRouter()
 
 
-@router.get("/{category_id}", response_model=Category)
-def get_category(category_id: int, session: Session = Depends(get_session)):
-    get_category_by_id(category_id, session)
+@router.get("/", response_model=List[Category])
+def list_categories(
+    session: Session = Depends(get_session),
+):
+    service = CategoryService(session)
+    return service.get_all()
 
 
 @router.post("/", response_model=Category)
 def create_category(
-    category: CategoryCreate,
+    data: CategoryCreate,
     session: Session = Depends(get_session),
 ):
-    return create_category(category, session)
+    return CategoryService(session).create(data)
 
 
-@router.get("/", response_model=list[Category])
-def get_categories(session: Session = Depends(get_session)):
-    return get_all_categories(session)
+@router.get("/{category_id}", response_model=Category)
+def get_category(
+    category_id: int,
+    session: Session = Depends(get_session),
+):
+    return CategoryService(session).get_by_id(category_id)
 
 
 @router.put("/{category_id}", response_model=Category)
 def update_category(
     category_id: int,
-    category: CategoryUpdate,
-    session: Session = Depends(get_session)
+    data: CategoryUpdate,
+    session: Session = Depends(get_session),
 ):
-    return update_category(category_id, category, session)
+    return CategoryService(session).update(category_id, data)
 
 
-@router.delete("/{category_id}", response_model=Category)
+@router.delete("/{category_id}")
 def delete_category(
     category_id: int,
     session: Session = Depends(get_session),
 ):
-    return delete_category(category_id, session)
+    return CategoryService(session).delete(category_id)
