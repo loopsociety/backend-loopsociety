@@ -10,7 +10,7 @@ API del foro colaborativo de la comunidad LoopSociety, desarrollada en FastAPI c
 - [SQLModel](https://sqlmodel.tiangolo.com/)
 - [MySQL](https://www.mysql.com/)
 - [Alembic](https://alembic.sqlalchemy.org/)
-- [Docker (opcional)](https://www.docker.com/)
+- [Docker](https://www.docker.com/)
 - [JWT](https://jwt.io/)
 - Python 3.10+
 
@@ -22,25 +22,6 @@ API del foro colaborativo de la comunidad LoopSociety, desarrollada en FastAPI c
 
 ---
 
-## 📁 Estructura base del proyecto
-```
-app/
-│
-├── api/ # Routers
-├── core/ # Configs, seguridad, dependencias
-├── db/
-│ ├── database.py # Engine de SQLModel
-│ ├── models/ # Modelos (User, Thread, etc)
-│ └── schemas/ # Pydantic schemas
-├── services/ # Lógica de negocio
-├── main.py
-alembic/
-.env
-README.md
-```
-
----
-
 ## 🧪 Cómo ejecutar localmente
 
 1. Clona el repositorio:
@@ -48,31 +29,6 @@ README.md
 ```bash
 git clone https://github.com/loopsociety/loopsociety-api.git
 cd loopsociety-api
-```
-
-2. Instala dependencias:
-
-```bash
-pip install -r requirements.txt
-```
-
-3. Crea un archivo `.env`:
-
-```env
-DATABASE_URL=mysql+pymysql://user:password@localhost:3306/loopsociety
-SECRET_KEY=supersecret
-```
-
-4. Aplica las migraciones:
-
-```bash
-alembic upgrade head
-```
-
-5. Ejecuta el servidor:
-
-```bash
-uvicorn app.main:app --reload
 ```
 
 ## 🐳 Uso de Docker Compose y Devcontainer
