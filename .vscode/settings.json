@@ -3,5 +3,10 @@
   "[python]": {
     "editor.defaultFormatter": "ms-python.autopep8",
     "editor.formatOnSave": true // Autosave formats the file
-  }
+  },
+  "python.testing.pytestArgs": [
+    "app"
+  ],
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true
 }
