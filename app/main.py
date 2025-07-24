@@ -2,7 +2,6 @@ from fastapi import FastAPI
 from app.api.v1.endpoints import users, auth, categories, threads, posts
 from app.middlewares.process_header import ProcessHeader
 from app.middlewares.auth_middleware import AuthMiddleware
-from starlette.middleware.base import BaseHTTPMiddleware
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import ORIGINS
 
