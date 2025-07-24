@@ -23,7 +23,7 @@ class ThreadService:
         return self.session.exec(select(Thread).offset(skip).limit(limit)).all()
 
     def create(self, data: ThreadCreate, user_id: int) -> Thread:
-        new_thread = Thread(**data.dict(), user_id=user_id)
+        new_thread = Thread(**data.model_dump(), user_id=user_id)
         self.session.add(new_thread)
         self.session.commit()
         self.session.refresh(new_thread)

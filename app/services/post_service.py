@@ -23,7 +23,7 @@ class PostService:
         return self.session.exec(select(Post).offset(skip).limit(limit)).all()
 
     def create(self, data: PostCreate, user_id: int) -> Post:
-        new_post = Post(**data.dict(), user_id=user_id)
+        new_post = Post(**data.model_dump(), user_id=user_id)
         self.session.add(new_post)
         self.session.commit()
         self.session.refresh(new_post)

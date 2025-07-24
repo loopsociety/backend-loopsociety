@@ -11,6 +11,13 @@ class UserService:
     def __init__(self, session: Session):
         self.session = session
 
+    def get_by_id(self, thread_id: int) -> UserRead:
+        user = self.session.exec(
+            select(User).where(User.id == thread_id)).first()
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        return user
+
     def get_current_user(self, token: str) -> User:
         try:
             payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -28,11 +35,11 @@ class UserService:
         return user
 
     def get_profile(self, user_id: int) -> UserRead:
-        user = self.get_user_by_id(user_id)
+        user = self.get_by_id(user_id)
         return UserRead(id=user.id, username=user.username, email=user.email)
 
     def update_user(self, user_id: int, data: UserUpdate) -> UserRead:
-        user = self.get_user_by_id(user_id)
+        user = self.get_by_id(user_id)
 
         if data.username:
             existing = self.get_user_by_username(data.username)
@@ -52,7 +59,7 @@ class UserService:
         return UserRead(id=user.id, username=user.username, email=user.email)
 
     def change_password(self, user_id: int, current_password: str, new_password: str):
-        user = self.get_user_by_id(user_id)
+        user = self.get_by_id(user_id)
 
         if not self.verify_password(current_password, user.password_hash):
             raise HTTPException(
@@ -64,7 +71,7 @@ class UserService:
         return {"message": "Password updated successfully"}
 
     def delete_user(self, user_id: int):
-        user = self.get_user_by_id(user_id)
+        user = self.get_by_id(user_id)
         self.session.delete(user)
         self.session.commit()
         return {"message": "User deleted"}

@@ -34,7 +34,7 @@ class CategoryService:
             raise HTTPException(
                 status_code=400, detail="Category already exists")
 
-        new_category = Category(**data.dict())
+        new_category = Category(**data.model_dump())
         self.session.add(new_category)
         self.session.commit()
         self.session.refresh(new_category)
@@ -43,7 +43,7 @@ class CategoryService:
     def update(self, category_id: int, data: CategoryUpdate) -> Category:
         category = self.get_by_id(category_id)
 
-        for field, value in data.dict(exclude_unset=True).items():
+        for field, value in data.model_dump(exclude_unset=True).items():
             setattr(category, field, value)
 
         self.session.add(category)
