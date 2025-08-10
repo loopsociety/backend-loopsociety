@@ -2,7 +2,7 @@ from typing import List
 from app.models.user import User
 from app.schemas.user import UserRead, UserUpdate
 from sqlmodel import Session, select
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 from jose import jwt, JWTError
 from app.core.config import SECRET_KEY, ALGORITHM
 
@@ -15,7 +15,10 @@ class UserService:
         user = self.session.exec(
             select(User).where(User.id == thread_id)).first()
         if not user:
-            raise HTTPException(status_code=404, detail="User not found")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found"
+            )
         return user
 
     def get_current_user(self, token: str) -> User:
@@ -23,14 +26,23 @@ class UserService:
             payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
             user_id = payload.get("sub")
             if user_id is None:
-                raise HTTPException(status_code=401, detail="Invalid token")
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Invalid token"
+                )
         except JWTError:
-            raise HTTPException(status_code=401, detail="Invalid token")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid token"
+            )
 
         user = self.session.exec(select(User).where(
             User.id == int(user_id))).first()
         if user is None:
-            raise HTTPException(status_code=404, detail="User not found")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="User not found"
+            )
 
         return user
 
@@ -44,13 +56,19 @@ class UserService:
         if data.username:
             existing = self.get_user_by_username(data.username)
             if existing and existing.id != user_id:
-                raise HTTPException(400, detail="Username already taken")
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Username already taken"
+                )
             user.username = data.username
 
         if data.email:
             existing = self.get_user_by_email(data.email)
             if existing and existing.id != user_id:
-                raise HTTPException(400, detail="Email already in use")
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Email already in use"
+                )
             user.email = data.email
 
         self.session.add(user)
@@ -63,7 +81,9 @@ class UserService:
 
         if not self.verify_password(current_password, user.password_hash):
             raise HTTPException(
-                status_code=400, detail="Current password is incorrect")
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Current password is incorrect"
+            )
 
         user.password_hash = self.hash_password(new_password)
         self.session.add(user)

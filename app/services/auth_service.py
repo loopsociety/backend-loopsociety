@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from typing import Optional
 
-from fastapi import HTTPException, Request
+from fastapi import HTTPException, Request, status
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from sqlmodel import Session, select
@@ -38,7 +38,8 @@ class AuthService:
 
         if user_exists:
             raise HTTPException(
-                400, detail="Email or username already exists.")
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Email or username already exists.")
 
         user = User(
             email=email,
@@ -57,7 +58,10 @@ class AuthService:
             select(User).where(User.email == email)).first()
 
         if not user or not self.verify_password(password, user.password_hash):
-            raise HTTPException(401, detail="Invalid credentials")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid credentials"
+            )
 
         return user
 
@@ -118,7 +122,9 @@ class AuthService:
 
         if user_id != current_user.id:
             raise HTTPException(
-                403, detail="User not authorized to logout this session.")
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="User not authorized to logout this session."
+            )
 
         session = self._get_active_session(user_id, refresh_token)
 
@@ -135,7 +141,10 @@ class AuthService:
             user_id = int(payload.get("sub"))
             return user_id
         except (JWTError, TypeError, ValueError):
-            raise HTTPException(401, detail="Invalid refresh token.")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid refresh token."
+            )
 
     def _get_active_session(self, user_id: int, refresh_token: str) -> UserSession:
         token_hash = get_token_hash(refresh_token)
@@ -149,6 +158,9 @@ class AuthService:
         ).first()
 
         if not session:
-            raise HTTPException(401, detail="No active session found.")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="No active session found."
+            )
 
         return session

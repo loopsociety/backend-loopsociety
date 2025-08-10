@@ -1,5 +1,5 @@
 from typing import List
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 from sqlmodel import Session, select
 from app.models.post import Post
 from app.schemas.post import PostCreate, PostUpdate
@@ -13,7 +13,10 @@ class PostService:
         post = self.session.exec(
             select(Post).where(Post.id == post_id)).first()
         if not post:
-            raise HTTPException(status_code=404, detail="Post not found")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Post not found"
+            )
         return post
 
     def get_all(self) -> List[Post]:
@@ -34,7 +37,9 @@ class PostService:
 
         if post.user_id != user_id:
             raise HTTPException(
-                status_code=403, detail="Not authorized to update this post")
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Not authorized to update this post"
+            )
 
         for field, value in data.dict(exclude_unset=True).items():
             setattr(post, field, value)
@@ -49,7 +54,9 @@ class PostService:
 
         if post.user_id != user_id:
             raise HTTPException(
-                status_code=403, detail="Not authorized to delete this post")
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Not authorized to delete this post"
+            )
 
         self.session.delete(post)
         self.session.commit()

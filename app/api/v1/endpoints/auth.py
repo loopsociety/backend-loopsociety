@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlmodel import Session
 from app.schemas.user import UserCreate, UserLogin
 from app.db.database import get_session
@@ -28,7 +28,9 @@ def login(
         form_data.email, form_data.password)
     if not user:
         raise HTTPException(
-            status_code=400, detail="Incorrect username or password")
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Incorrect username or password"
+        )
 
     return AuthService(session).login_user(user, request)
 
@@ -43,7 +45,9 @@ async def logout(
 
     if not refresh_token:
         raise HTTPException(
-            status_code=400, detail="Refresh token is required")
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Refresh token is required"
+        )
 
     return AuthService(session).logout_user(refresh_token, current_user)
 

@@ -1,5 +1,5 @@
 from typing import List
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 from sqlmodel import Session, select
 from app.models.thread import Thread
 from app.schemas.thread import ThreadCreate, ThreadUpdate
@@ -13,7 +13,10 @@ class ThreadService:
         thread = self.session.exec(
             select(Thread).where(Thread.id == thread_id)).first()
         if not thread:
-            raise HTTPException(status_code=404, detail="Thread not found")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Thread not found"
+            )
         return thread
 
     def get_all(self) -> List[Thread]:
@@ -34,7 +37,9 @@ class ThreadService:
 
         if thread.user_id != user_id:
             raise HTTPException(
-                status_code=403, detail="Not authorized to update this thread")
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Not authorized to update this thread"
+            )
 
         for field, value in data.dict(exclude_unset=True).items():
             setattr(thread, field, value)
@@ -49,7 +54,9 @@ class ThreadService:
 
         if thread.user_id != user_id:
             raise HTTPException(
-                status_code=403, detail="Not authorized to delete this thread")
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Not authorized to delete this thread"
+            )
 
         self.session.delete(thread)
         self.session.commit()
